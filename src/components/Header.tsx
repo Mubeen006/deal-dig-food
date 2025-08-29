@@ -1,8 +1,16 @@
-import { MapPin, ShoppingCart, Search, Bike, Package, Store, UtensilsCrossed, ChevronDown } from "lucide-react";
+import { MapPin, ShoppingCart, Search, Bike, Package, Store, UtensilsCrossed, ChevronDown, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useState } from "react";
 
 const Header = () => {
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  
+  const popularSearches = [
+    "Pizza", "Burger", "Chinese", "BBQ", "Biryani", 
+    "Fast Food", "Desserts", "Coffee"
+  ];
+
   const navItems = [
     { name: "Delivery", icon: Bike, active: true },
     { name: "Pick-up", icon: Package, active: false },
@@ -68,15 +76,66 @@ const Header = () => {
           </nav>
 
           {/* Search */}
-          <div className="relative w-80">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search for restaurants, cuisines, and dishes"
-              className="pl-10 bg-background border-border"
-            />
+          <div className="relative">
+            <div className="relative w-80">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search for restaurants, cuisines, and dishes"
+                className="pl-10 bg-background border-border cursor-pointer"
+                onClick={() => setIsSearchExpanded(true)}
+                readOnly
+              />
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Expanded Search Overlay */}
+      {isSearchExpanded && (
+        <>
+          <div 
+            className="fixed inset-0 bg-black/20 z-40"
+            onClick={() => setIsSearchExpanded(false)}
+          />
+          <div className="absolute top-0 left-0 right-0 bg-background border-b shadow-lg z-50 animate-fade-in">
+            <div className="container mx-auto px-4 py-6">
+              {/* Search Input */}
+              <div className="relative mb-6">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input
+                  placeholder="Search for restaurants, cuisines, and dishes"
+                  className="pl-12 pr-12 py-4 text-lg bg-background border-border"
+                  autoFocus
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                  onClick={() => setIsSearchExpanded(false)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+
+              {/* Popular Searches */}
+              <div className="bg-muted/20 rounded-lg p-4">
+                <h3 className="text-sm font-medium text-foreground mb-3">Popular Searches</h3>
+                <div className="flex flex-wrap gap-2">
+                  {popularSearches.map((search) => (
+                    <button
+                      key={search}
+                      className="px-3 py-1.5 bg-background border border-border rounded-full text-sm text-foreground hover:bg-accent transition-colors"
+                      onClick={() => setIsSearchExpanded(false)}
+                    >
+                      {search}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </header>
   );
 };
