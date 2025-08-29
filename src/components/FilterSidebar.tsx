@@ -5,7 +5,16 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Search } from "lucide-react";
 
-const FilterSidebar = () => {
+interface FilterSidebarProps {
+  filters: {
+    sortBy: string;
+    freeDelivery: boolean;
+    deals: boolean;
+  };
+  onFiltersChange: (filters: any) => void;
+}
+
+const FilterSidebar = ({ filters, onFiltersChange }: FilterSidebarProps) => {
   const cuisines = [
     "American",
     "BBQ", 
@@ -21,11 +30,24 @@ const FilterSidebar = () => {
     "Italian",
   ];
 
+  const handleClearAll = () => {
+    onFiltersChange({
+      sortBy: 'relevance',
+      freeDelivery: false,
+      deals: false,
+    });
+  };
+
   return (
     <div className="w-80 bg-card p-6 space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Filters</h2>
-        <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="text-muted-foreground hover:text-foreground"
+          onClick={handleClearAll}
+        >
           Clear all
         </Button>
       </div>
@@ -35,7 +57,11 @@ const FilterSidebar = () => {
         <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
           Sort by
         </h3>
-        <RadioGroup defaultValue="fastest" className="space-y-2">
+        <RadioGroup 
+          value={filters.sortBy} 
+          onValueChange={(value) => onFiltersChange({ ...filters, sortBy: value })}
+          className="space-y-2"
+        >
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="relevance" id="relevance" />
             <Label htmlFor="relevance" className="text-sm">Relevance</Label>
@@ -77,15 +103,27 @@ const FilterSidebar = () => {
         </h3>
         <div className="space-y-3">
           <div className="flex items-center space-x-2">
-            <Checkbox id="free-delivery" defaultChecked />
+            <Checkbox 
+              id="free-delivery" 
+              checked={filters.freeDelivery}
+              onCheckedChange={(checked) => 
+                onFiltersChange({ ...filters, freeDelivery: checked })
+              }
+            />
             <Label htmlFor="free-delivery" className="text-sm">Free delivery</Label>
           </div>
           <div className="flex items-center space-x-2">
-            <Checkbox id="vouchers" />
-            <Label htmlFor="vouchers" className="text-sm">Accepts vouchers</Label>
+            <Checkbox id="vouchers" disabled />
+            <Label htmlFor="vouchers" className="text-sm opacity-50">Accepts vouchers</Label>
           </div>
           <div className="flex items-center space-x-2">
-            <Checkbox id="deals" defaultChecked />
+            <Checkbox 
+              id="deals" 
+              checked={filters.deals}
+              onCheckedChange={(checked) => 
+                onFiltersChange({ ...filters, deals: checked })
+              }
+            />
             <Label htmlFor="deals" className="text-sm">Deals</Label>
           </div>
         </div>
