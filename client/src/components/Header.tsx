@@ -2,6 +2,7 @@ import { MapPin, ShoppingCart, Search, Bike, Package, Store, UtensilsCrossed, Ch
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import SearchBox from '@/components/SearchBox';
 
 const Header = () => {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
@@ -100,22 +101,9 @@ const Header = () => {
           <div className="absolute top-0 left-0 right-0 bg-background border-b shadow-lg z-50 animate-fade-in">
             <div className="container mx-auto px-4 py-6">
               {/* Search Input */}
-              <div className="relative mb-6">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input
-                  placeholder="Search for restaurants, cuisines, and dishes"
-                  className="pl-12 pr-12 py-4 text-lg bg-background border-border"
-                  autoFocus
-                />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
-                  onClick={() => setIsSearchExpanded(false)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
+              <SearchBox
+                onClose={() => setIsSearchExpanded(false)}
+              />
 
               {/* Popular Searches */}
               <div className="bg-muted/20 rounded-lg p-4">

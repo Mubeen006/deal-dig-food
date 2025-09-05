@@ -1,7 +1,27 @@
-import { cuisines } from "@/data/restaurants";
+import { useCuisines } from "@/hooks/useApi";
 import { ChevronRight } from "lucide-react";
+import LoadingSpinner from "./LoadingSpinner";
 
 const CuisinesCarousel = () => {
+  const { cuisines, loading, error } = useCuisines();
+
+  if (loading) {
+    return (
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-foreground mb-6">Cuisines for you</h2>
+        <LoadingSpinner message="Loading cuisines..." />
+      </div>
+    );
+  }
+
+  if (error || !cuisines.length) {
+    return (
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-foreground mb-6">Cuisines for you</h2>
+        <div className="text-center py-8 text-muted-foreground">No cuisines available</div>
+      </div>
+    );
+  }
   return (
     <div className="mb-8">
       <h2 className="text-2xl font-bold text-foreground mb-6">Cuisines for you</h2>

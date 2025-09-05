@@ -1,6 +1,26 @@
-import { dailyDeals } from "@/data/restaurants";
+import { useDailyDeals } from "@/hooks/useApi";
+import LoadingSpinner from "./LoadingSpinner";
 
 const DailyDeals = () => {
+  const { dailyDeals, loading, error } = useDailyDeals();
+
+  if (loading) {
+    return (
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-foreground mb-6">Your daily deals</h2>
+        <LoadingSpinner message="Loading deals..." />
+      </div>
+    );
+  }
+
+  if (error || !dailyDeals.length) {
+    return (
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-foreground mb-6">Your daily deals</h2>
+        <div className="text-center py-8 text-muted-foreground">No deals available</div>
+      </div>
+    );
+  }
   return (
     <div className="mb-8">
       <h2 className="text-2xl font-bold text-foreground mb-6">Your daily deals</h2>

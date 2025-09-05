@@ -6,9 +6,11 @@ import PromoBanner from "@/components/PromoBanner";
 import DailyDeals from "@/components/DailyDeals";
 import CuisinesCarousel from "@/components/CuisinesCarousel";
 import RestaurantSection from "@/components/RestaurantSection";
-import { restaurants } from "@/data/restaurants";
+import LoadingSpinner from "@/components/LoadingSpinner";
+import { useRestaurants } from "@/hooks/useApi";
 
 const Index = () => {
+  const { restaurants, loading, error } = useRestaurants();
   const [filters, setFilters] = useState({
     sortBy: 'relevance',
     freeDelivery: false,
@@ -16,14 +18,25 @@ const Index = () => {
   });
 
   const filteredRestaurants = useMemo(() => {
+    if (!restaurants.length) return [];
     let filtered = [...restaurants];
+
+    // Helper: extract the lower bound minute from strings like "10-25 min" or "5-20 min"
+    const getDeliveryLower = (dt: string) => {
+      const m = dt.match(/(\d+)/);
+      return m ? parseInt(m[1], 10) : Number.MAX_SAFE_INTEGER;
+    };
 
     // Apply sorting and filtering
     if (filters.sortBy === 'fastest') {
-      filtered = filtered.filter(r => r.fastDelivery);
+      // show only fastDelivery restaurants, and sort them by lower delivery time
+      filtered = filtered
+        .filter((r) => r.fastDelivery)
+        .sort((a, b) => getDeliveryLower(a.deliveryTime) - getDeliveryLower(b.deliveryTime));
     } else if (filters.sortBy === 'distance') {
-      filtered = filtered.sort((a, b) => 
-        parseInt(a.deliveryTime) - parseInt(b.deliveryTime)
+      // distance isn't available in sample data, use deliveryTime lower bound as a proxy
+      filtered = filtered.sort((a, b) =>
+        getDeliveryLower(a.deliveryTime) - getDeliveryLower(b.deliveryTime)
       );
     }
 
@@ -42,6 +55,30 @@ const Index = () => {
 
   const newRestaurants = restaurants.filter(r => r.isNew);
   const discountRestaurants = restaurants.filter(r => r.category === 'discount');
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-6">
+          <LoadingSpinner message="Loading restaurants..." />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-lg text-red-500">Error loading restaurants: {error}</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
